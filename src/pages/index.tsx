@@ -3,19 +3,13 @@ import Filter from "@/components/Filter";
 
 import { PT_Sans } from "next/font/google";
 import Head from "next/head";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { MagnifyingGlass, X } from "phosphor-react";
 
 const ptSans = PT_Sans({
   weight: ["400", "700"],
   subsets: ["latin-ext"],
 });
-
-type FilterParams = {
-  query?: string;
-  genre?: Genre | null;
-  platforms?: Platform[];
-};
 
 export default function Home() {
   const [games, setGames] = useState<Game[]>([]);
@@ -59,6 +53,8 @@ export default function Home() {
     });
   }
 
+  const changeHandler = useCallback(updateFilterParams, []);
+
   useEffect(() => {
     console.log(filterParams);
   }, [filterParams]);
@@ -97,14 +93,14 @@ export default function Home() {
         <title>App Masters</title>
       </Head>
       <div className="flex w-screen h-screen  ">
-        <main className="w-full">
+        <main className="w-screen">
           {loading && !error ? (
             <span>Carregando...</span>
           ) : (
             !error && (
               <div className="flex flex-col justify-start xl:mx-48 xl:my-5 h-1/2">
-                <div className="flex justify-between py-8 flex-col sm:flex-row ">
-                  <div className="flex">
+                <div className="flex justify-between pb-4 flex-col sm:flex-row ">
+                  <div className="flex mb-5">
                     <form className=" w-full" onSubmit={handleSubmit}>
                       <div
                         className="
@@ -122,7 +118,7 @@ export default function Home() {
                         <MagnifyingGlass />
                         <input
                           ref={inputRef}
-                          className="w-full bg-slate-900 p-1 rounded-lg 
+                          className="w-full bg-slate-900 p-1 py-2 rounded-lg 
                             focus:ring-0
                             focus:outline-none"
                           type="text"
@@ -141,15 +137,16 @@ export default function Home() {
                       </div>
                     </form>
                   </div>
-                  <div className="flex">
+                  <div className="flex justify-end ">
                     <Filter
                       {...{
                         options: Array.from(
                           new Set(games.map((game) => game.genre))
                         ).map((genre, index) => genre as Genre),
                         multiple: false,
-                        value: ["Action"],
-                        name: "Gênero",
+                        onChange: changeHandler,
+                        name: "genre",
+                        label: "Gênero",
                       }}
                     />
                     <Filter
@@ -159,15 +156,16 @@ export default function Home() {
                             games.flatMap((game) => game.platform.split(", "))
                           )
                         ).map((platform, index) => platform as Platform),
-                        multiple: false,
-                        value: ["Action"],
-                        name: "Plataforma",
+                        multiple: true,
+                        label: "Plataforma",
+                        name: "platforms",
+                        onChange: changeHandler,
                       }}
                     />
                   </div>
                 </div>
                 {gameList.length > 1 ? (
-                  <ul className="grid grid-cols-1 mx-4 gap-8 w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 xl:mx-0 ">
+                  <ul className="grid grid-cols-1 px-4 gap-8 w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 xl:px-0 ">
                     {gameList.map((game, index) => {
                       return <Card key={index} {...(game as any)}></Card>;
                     })}

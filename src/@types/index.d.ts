@@ -30,3 +30,9 @@ type Game = {
 };
 
 type Platform = "PC (Windows)" | "Browser";
+
+type FilterParams = {
+  query?: string;
+  genre?: Genre | null;
+  platforms?: Platform[];
+};
