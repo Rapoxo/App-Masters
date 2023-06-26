@@ -29,7 +29,7 @@ type Game = {
   freetogame_profile_url: string;
 };
 
-type Platform = "PC (Windows)" | "Browser";
+type Platform = "PC (Windows)" | "Web Browser";
 
 type FilterParams = {
   query?: string;

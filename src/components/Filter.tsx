@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
 import { CaretDown } from "phosphor-react";
 
 type FilterProps = {
@@ -31,26 +32,23 @@ const Filter = ({ multiple, options, label, name, onChange }: FilterProps) => {
     };
   }, [filterRef]);
 
- /*  useEffect(() => {
-    onChange({ [name]: selected });
-  }, [selected, onChange, name]); */
+  useEffect(() => {
+    onChange({ [name]: multiple ? selected : selected[0] });
+  }, [selected, onChange, name, multiple]);
 
   return (
-    <div className="mr-4" ref={filterRef}>
+    <div ref={filterRef}>
       <div className="relative inline-block text-left">
         <div>
           <button
             type="button"
-            className="inline-flex relative justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-slate-900 text-sm font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-slate-500 items-center"
+            className="inline-flex relative justify-center w-full rounded-md  shadow-sm px-4 py-2 bg-indigo-700 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-1 focus:ring-offset-1  items-center"
             id="options-menu"
             aria-haspopup="true"
             aria-expanded="true"
             onClick={() => setIsOpen(!isOpen)}
           >
-            {
-              /* !multiple && selected.length > 0 ? selected[0] : label */
-              label
-            }
+            {!multiple && selected.length > 0 ? selected[0] : label}
             <span
               className={`
               transition 
@@ -67,22 +65,38 @@ const Filter = ({ multiple, options, label, name, onChange }: FilterProps) => {
           <div
             className={`${
               isOpen ? "block" : "hidden"
-            } select-none z-10 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-slate-900 ring-1 ring-black ring-opacity-5`}
+            } select-none z-40 origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-slate-900 ring-1 ring-black ring-opacity-5`}
           >
             <div
               className={`py-1 ${
                 multiple ? "max-h-60 overflow-y-scroll" : ""
-              } text-base rounded-md bg-slate-900 shadow-xs`}
+              } text-base rounded-md bg-indigo-900 shadow-xs`}
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="options-menu"
             >
+              {!multiple && (
+                <label>
+                  <div
+                    className={`${
+                      multiple ? "flex justify-between" : ""
+                    } cursor-pointer px-4 py-2 text-sm text-white hover:bg-indigo-700 hover:text-white`}
+                    role="menuitem"
+                    onClick={() => {
+                      setSelected([]);
+                      setIsOpen(false);
+                    }}
+                  >
+                    {label}
+                  </div>
+                </label>
+              )}
               {options.map((option, index) => (
                 <label key={index}>
                   <div
                     className={`${
                       multiple ? "flex justify-between" : ""
-                    } cursor-pointer px-4 py-2 text-sm text-white hover:bg-slate-800 hover:text-white`}
+                    } cursor-pointer px-4 py-2 text-sm text-white hover:bg-indigo-700 hover:text-white`}
                     role="menuitem"
                     onClick={() => {
                       if (multiple) return;
@@ -94,7 +108,7 @@ const Filter = ({ multiple, options, label, name, onChange }: FilterProps) => {
                     {multiple && (
                       <input
                         type="checkbox"
-                        className="mr-2"
+                        className="accent-violet-600"
                         checked={selected.includes(option)}
                         onChange={() => {
                           if (selected.includes(option)) {
