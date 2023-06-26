@@ -12,6 +12,7 @@ import Card from "@/components/Card";
 import Carousel from "@/components/Carousel";
 import Filter from "@/components/Filter";
 import Head from "next/head";
+import Header from "@/components/Header";
 import { PT_Sans } from "next/font/google";
 import { PacmanLoader } from "react-spinners";
 
@@ -150,10 +151,12 @@ const Home = () => {
 
 
   return (
-    <div className={`pt-5 ${ptSans.className}`}>
+    <div className={`${ptSans.className}`}>
       <Head>
         <title>App Masters</title>
       </Head>
+
+      <Header/>
 
       <div className="flex max-w-screen w-full h-screen  ">
         <main className="w-full">
