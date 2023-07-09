@@ -4,7 +4,7 @@ Implementação de frontend em api de jogos App Masters.
 
 ## Tecnologias
 
-[Next.js](https://nextjs.org/) • [Typescript](https://www.typescriptlang.org/)• [TailwindCSS](https://tailwindcss.com/) • [Phosphor Icons](https://phosphoricons.com/)• [React Spinners](https://www.davidhu.io/react-spinners/)
+[Next.js](https://nextjs.org/) • [Typescript](https://www.typescriptlang.org/) • [TailwindCSS](https://tailwindcss.com/) • [Phosphor Icons](https://phosphoricons.com/) • [React Spinners](https://www.davidhu.io/react-spinners/) • [Swiper](https://swiperjs.com/)
 
 ## Exemplos
 
