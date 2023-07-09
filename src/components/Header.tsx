@@ -3,7 +3,7 @@ import React from "react";
 
 const Header = () => {
   return (
-    <div className="flex justify-between items-center w-screen p-4 bg-indigo-700">
+    <div className="flex justify-between items-center w-full p-4 bg-indigo-700">
       <h1 className="flex items-center text-3xl">
         <GameController className="mr-2" size={32} />
         App Masters
