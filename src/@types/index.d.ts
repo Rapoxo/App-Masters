@@ -22,7 +22,7 @@ type Game = {
   short_description: string;
   game_url: string;
   genre: Genre;
-  platform: string;
+  platform: Platform;
   publisher: string;
   developer: string;
   release_date: string;
@@ -34,5 +34,5 @@ type Platform = "PC (Windows)" | "Web Browser";
 type FilterParams = {
   query?: string;
   genre?: Genre | null;
-  platforms?: Platform[];
+  platform?: Platform | null;
 };
