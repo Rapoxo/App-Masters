@@ -5,16 +5,17 @@ import {
   useRef,
   useState,
 } from "react";
-import { MagnifyingGlass, X } from "phosphor-react";
 
+import { MagnifyingGlass, X } from "phosphor-react";
+import { PacmanLoader } from "react-spinners";
+
+import Header from "@/components/Header";
 import Filter from "@/components/Filter";
 import GameList from "@/components/GameList";
 import Highlights from "@/components/Highlights";
 
 import Head from "next/head";
-import Header from "@/components/Header";
 import { PT_Sans } from "next/font/google";
-import { PacmanLoader } from "react-spinners";
 
 const ptSans = PT_Sans({
   weight: ["400", "700"],

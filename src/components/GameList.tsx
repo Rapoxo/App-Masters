@@ -9,10 +9,8 @@ type GameListProps = {
 
 const GameList = ({ games, length, filterParams }: GameListProps) => {
   const gameList = useMemo(() => {
-    console.log(filterParams)
     return games.filter((game) => {
       let [query, genre, platform] = [true,true,true];
-
 
       if (filterParams.query) {
         query = game.title
