@@ -1,12 +1,15 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
+import { useRouter } from "next/router";
 import { AuthContext } from "@/contexts/AuthContext";
 
 import { SyncLoader } from "react-spinners";
 
 const Auth = () => {
+  const router = useRouter();
   const [signInMode, setSignInMode] = useState(true);
-  const { signIn, signUp, error, loading } = useContext(AuthContext);
+  const { signIn, signUp, error, loading, user, expiresAt } =
+    useContext(AuthContext);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -19,6 +22,11 @@ const Auth = () => {
     if (!email || !password) return;
     signInMode ? signIn({ email, password }) : signUp({ email, password });
   };
+
+  // Redirect to home if user is logged
+  useEffect(() => {
+    if (user && expiresAt > Date.now()) router.push("/");
+  }, [user]);
 
   return (
     <div className="flex justify-center items-center h-screen w-full">
@@ -76,13 +84,15 @@ const Auth = () => {
           {error && <p className="text-red-500 text-center">{error}</p>}
 
           <span>
-            { signInMode ?  "Ainda não tem uma conta?" : "Já tem uma conta?" }
-            {" "}
-            <span onClick={() => setSignInMode((prev) => !prev) } className="hover:underline text-sm text-indigo-600 cursor-pointer " >clique aqui</span>
+            {signInMode ? "Ainda não tem uma conta?" : "Já tem uma conta?"}{" "}
+            <span
+              onClick={() => setSignInMode((prev) => !prev)}
+              className="hover:underline text-sm text-indigo-600 cursor-pointer "
+            >
+              clique aqui
+            </span>
           </span>
         </form>
-
-        
       </section>
     </div>
   );

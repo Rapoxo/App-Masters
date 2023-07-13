@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { auth, firestore } from "@/services/firebaseClient";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import useSessionStorage from "@/hook/useSessionStorage";
 
 type User = {
   uid: string;
@@ -34,8 +35,8 @@ type AuthContextType = {
 const AuthContext = createContext({} as AuthContextType);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [expiresAt, setExpiresAt] = useState(0);
+  const [user, setUser] = useSessionStorage<User | null>("user", null);
+  const [expiresAt, setExpiresAt] = useSessionStorage<number>("expiresAt", 0);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +47,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const { uid, metadata } = result.user;
       setUser({ uid, email, metadata });
-      await createUser({ uid, email });
       setExpiresAt(Date.now() + 15 * 60 * 1000);
     } catch (err: any) {
       setError(err.message);
@@ -77,6 +77,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await signOutFirebase(auth);
       setUser(null);
+      setExpiresAt(0);
     } catch (err: any) {
       setError(err.message);
     }
