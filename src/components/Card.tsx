@@ -73,7 +73,7 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
           alt={title}
         />
 
-        <div className="backdrop backdrop-blur-md absolute bottom-0 z-10 bg-blue-950/80 w-full flex flex-col  min-h-1/2 px-4 py-2 ">
+        <div className="backdrop backdrop-blur-md absolute bottom-0 z-10 bg-blue-950/80 w-full flex flex-col min-h-1/2 px-4 py-2 ">
           <div className="flex justify-between items-center">
             <h3 className="text-base font-bold m-0">
               {title} •{" "}

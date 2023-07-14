@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { GameController, Heart, House, List, SignIn } from "phosphor-react";
 import type IconType from "@/@types/IconType";
+import { AuthContext } from "@/contexts/AuthContext";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const navItems: NavItem[] = [
 
 const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
   const router = useRouter();
+  const { user, signOut } = useContext(AuthContext);
 
   useEffect(() => {
     setOpen(false);
@@ -77,16 +79,25 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
           </ul>
           <ul className="flex flex-col gap-4 ">
             <li className="py-2">
-              {/* Alternar para botão de logout caso o usuário esteja autenticado */}
-              <Link
-                className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-                href="/auth"
-              >
-                <SignIn
-                  weight={router.pathname === "/auth" ? "fill" : undefined}
-                />
-                Login
-              </Link>
+              {!!user ? (
+                <button
+                  onClick={signOut}
+                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                >
+                  <SignIn weight="fill" />
+                  Sair
+                </button>
+              ) : (
+                <Link
+                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                  href="/auth"
+                >
+                  <SignIn
+                    weight={router.pathname === "/auth" ? "fill" : undefined}
+                  />
+                  Login
+                </Link>
+              )}
             </li>
           </ul>
         </nav>
@@ -97,6 +108,7 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
 
 const Navbar = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -113,7 +125,25 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
             <GameController className="mr-2" size={32} />
             App Masters
           </h1>
-          <ul>
+          <ul className="flex justify-between gap-5 items-center">
+            {navItems.map((item, i) => {
+              return (
+                <li key={i} className="hidden md:block">
+                  <Link
+                    className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                    href={item.path}
+                  >
+                    <item.icon
+                      weight={
+                        router.pathname === item.path ? "fill" : undefined
+                      }
+                    />
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
+
             <li>
               <a target="_blank" href="https://github.com/rapoxo">
                 <svg
