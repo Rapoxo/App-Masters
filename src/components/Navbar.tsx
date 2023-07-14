@@ -79,25 +79,15 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
           </ul>
           <ul className="flex flex-col gap-4 ">
             <li className="py-2">
-              {!!user ? (
+              {
                 <button
-                  onClick={signOut}
+                  onClick={() => (!!user ? router.push("/auth") : signOut())}
                   className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
                 >
                   <SignIn weight="fill" />
-                  Sair
+                  {!!user ? "Sair" : "Login"}
                 </button>
-              ) : (
-                <Link
-                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-                  href="/auth"
-                >
-                  <SignIn
-                    weight={router.pathname === "/auth" ? "fill" : undefined}
-                  />
-                  Login
-                </Link>
-              )}
+              }
             </li>
           </ul>
         </nav>
