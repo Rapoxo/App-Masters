@@ -1,21 +1,15 @@
-import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import { MagnifyingGlass, X } from "phosphor-react";
-import { PacmanLoader } from "react-spinners";
 
-import Header from "@/components/Header";
 import Filter from "@/components/Filter";
 import GameList from "@/components/GameList";
 import Highlights from "@/components/Highlights";
 
 import Head from "next/head";
 import { PT_Sans } from "next/font/google";
+import Link from "next/link";
+import Loader from "@/components/Loader";
 
 const ptSans = PT_Sans({
   weight: ["400", "700"],
@@ -70,11 +64,11 @@ const Home = () => {
   };
 
   const handleScroll = () => {
-    const scrollTop = window.pageYOffset;
+    const scrollTop = window.scrollY;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
-
-    const endOfPage = scrollTop + windowHeight >= documentHeight;
+    const offset = 100;
+    const endOfPage = scrollTop + windowHeight + offset >= documentHeight;
 
     if (
       windowHeight + document.documentElement.scrollTop ===
@@ -111,15 +105,11 @@ const Home = () => {
         <title>App Masters</title>
       </Head>
 
-      <Header />
-
-      <div className="flex max-w-screen w-full h-screen  ">
+      <div className="flex max-w-screen w-full h-[90vh] ">
         <main className="w-full">
           <div className="flex flex-col  px-4 justify-start xl:mx-48 xl:my-5 h-1/2">
             {loading && !error && games.length < 1 ? (
-              <div className="flex justify-center items-center h-full ">
-                <PacmanLoader color="#4f46e5" />
-              </div>
+              <Loader />
             ) : error ? (
               <div className="flex flex-col gap-3 justify-center items-center h-full ">
                 <h1>{error}</h1>
@@ -136,7 +126,13 @@ const Home = () => {
 
                 <h2 className="text-2xl my-4">
                   Encontre seus jogos{" "}
-                  <span className="text-indigo-400">favoritos</span> aqui:
+                  <Link
+                    className="text-indigo-400 hover:underline"
+                    href="/favorites"
+                  >
+                    favoritos
+                  </Link>{" "}
+                  aqui:
                 </h2>
 
                 {/* Search & Filters */}

@@ -1,9 +1,12 @@
+import type IconType from "@/@types/IconType";
 import { Browsers, WindowsLogo } from "phosphor-react";
 import React from "react";
 
-const icons = {
-  "PC (Windows)": <WindowsLogo weight="fill" />,
-  "Web Browser": <Browsers weight="fill" />,
+type PlatformIcon = { [key in Platform]: IconType };
+
+const Icons: PlatformIcon = {
+  "PC (Windows)": WindowsLogo,
+  "Web Browser": Browsers,
 };
 
 type PlatformIconProps = {
@@ -11,7 +14,11 @@ type PlatformIconProps = {
 };
 
 const PlatformIcon = ({ platform }: PlatformIconProps) => {
-  return <span title={platform}>{icons[platform]}</span>;
+  return (
+    <span title={platform}>
+      {React.createElement(Icons[platform], { weight: "fill" })}
+    </span>
+  );
 };
 
 export default PlatformIcon;

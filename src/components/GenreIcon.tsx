@@ -1,3 +1,4 @@
+import type IconType from "@/@types/IconType";
 import {
   Butterfly,
   Club,
@@ -15,22 +16,24 @@ import {
 
 import React from "react";
 
-const icons = {
-  Shooter: <CrosshairSimple weight="fill" />,
-  MMOARPG: <Sword weight="fill" />,
-  ARPG: <Sword weight="fill" />,
-  Fighting: <HandFist weight="fill" />,
-  "Action RPG": <Sword weight="fill" />,
-  "Battle Royale": <Trophy weight="fill" />,
-  MMORPG: <Globe weight="fill" />,
-  MOBA: <NavigationArrow weight="fill" />,
-  Sports: <PersonSimpleRun weight="fill" />,
-  Racing: <FlagCheckered weight="fill" />,
-  "Card Game": <Club weight="fill" />,
-  Strategy: <Target weight="fill" />,
-  MMO: <Globe weight="fill" />,
-  Social: <UsersThree weight="fill" />,
-  Fantasy: <Butterfly weight="fill" />,
+type GenreIcon = { [key in Genre]: IconType };
+
+const Icons: GenreIcon = {
+  Shooter: CrosshairSimple,
+  MMOARPG: Sword,
+  ARPG: Sword,
+  Fighting: HandFist,
+  "Action RPG": Sword,
+  "Battle Royale": Trophy,
+  MMORPG: Globe,
+  MOBA: NavigationArrow,
+  Sports: PersonSimpleRun,
+  Racing: FlagCheckered,
+  "Card Game": Club,
+  Strategy: Target,
+  MMO: Globe,
+  Social: UsersThree,
+  Fantasy: Butterfly,
 };
 
 type GenreIconProps = {
@@ -38,7 +41,11 @@ type GenreIconProps = {
 };
 
 const GenreIcon = ({ genre }: GenreIconProps) => {
-  return <span title={genre}>{icons[genre]}</span>
+  return (
+    <span title={genre}>
+      {React.createElement(Icons[genre], { weight: "fill" })}
+    </span>
+  );
 };
 
 export default GenreIcon;

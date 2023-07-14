@@ -1,20 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 import PlatformIcon from "./PlatformIcon";
 import GenreIcon from "./GenreIcon";
+import Rating from "./Rating";
+import Favorite from "./Favorite";
 
-const Card = ({
-  id,
-  thumbnail,
-  title,
-  genre,
-  short_description,
-  platform,
-  game_url,
-  developer,
-  release_date,
-}: Game) => {
-  const [loading, setLoading] = useState(true);
+type CardProps = {
+  game: Game;
+  isOnFavorites?: boolean;
+  rating?: number; // 1 a 4
+};
+
+const Card = ({ game, isOnFavorites, rating }: CardProps) => {
+  const {
+    id,
+    title,
+    thumbnail,
+    short_description,
+    game_url,
+    genre,
+    platform,
+    publisher,
+    developer,
+    release_date,
+    freetogame_profile_url,
+  } = game;
+
+  const { user } = useContext(AuthContext);
   const [hover, setHover] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -34,14 +47,18 @@ const Card = ({
     };
   }, [liRef]);
 
-  const ratingHandler = (rating: number) => {
-    console.log(`${rating} stars`)
-  }
+  const ratingHandler = (id: number, rating: number) => {
+    console.log(`${id} is now ${rating} stars`);
+  };
+
+  const favoriteHandler = (id: number, favorite?: boolean) => {
+    console.log(`favorite ${favorite} ${id}`);
+  };
 
   return (
     <li
       ref={liRef}
-      id={`${id}`}
+      id={id.toString()}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => setOpen(!open)}
@@ -50,11 +67,8 @@ const Card = ({
       <div className="flex flex-col relative h-full">
         <img
           className={`w-full rounded-t-lg relative
-          transition duration-100 ease-in ${loading ? "hidden" : ""}
+          transition duration-100 ease-in 
           `}
-          onLoad={(e) => {
-            setLoading(false);
-          }}
           src={thumbnail}
           alt={title}
         />
@@ -82,6 +96,18 @@ const Card = ({
           <div className={`${!open && !hover && "hidden"} text mb-1`}>
             <p>{short_description}</p>
             <span>Lançamento: {release_date}</span>
+          </div>
+          <div className="flex gap-2 items-center my-1">
+            <Rating
+              onChange={(value) => ratingHandler(id, value)}
+              authenticated={!!user}
+              value={rating}
+            />
+            <Favorite
+              onClick={() => favoriteHandler(id, isOnFavorites)}
+              authenticated={!!user}
+              value={isOnFavorites}
+            />
           </div>
         </div>
       </div>

@@ -28,8 +28,13 @@ const Auth = () => {
     if (user && expiresAt > Date.now()) router.push("/");
   }, [user]);
 
+  const errorMessages: { [key: string]: string } = {
+    "Firebase: Error (auth/user-not-found).": "Usuário não encontrado",
+    "Firebase: Error (auth/email-already-in-use).": "Email já cadastrado",
+  };
+
   return (
-    <div className="flex justify-center items-center h-screen w-full">
+    <div className="flex justify-center items-center h-[90vh] w-full">
       <section className="flex flex-col gap-2 p-4 w-96 h-[70%] mx-2 md:h-[40%] bg-indigo-50 rounded-lg text-black ">
         <form
           className="flex flex-col h-full justify-between"
@@ -81,7 +86,9 @@ const Auth = () => {
             )}
           </button>
 
-          {error && <p className="text-red-500 text-center">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-center">{errorMessages[error]}</p>
+          )}
 
           <span>
             {signInMode ? "Ainda não tem uma conta?" : "Já tem uma conta?"}{" "}
