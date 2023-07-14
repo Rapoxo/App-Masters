@@ -82,7 +82,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setError(err.message);
     }
   };
-  
+
   // Adds user to Firestore database
   const createUser = async ({ email, uid }: { email: string; uid: string }) => {
     try {
@@ -93,12 +93,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       await setDoc(userRef, {
         email: email,
-        ratedGames: [],
-        favoriteGames: [],
+        favorites: [],
+        ratings: [],
       });
     } catch (err: any) {
       console.log(err);
-      setError(err.message)
+      setError(err.message);
     }
   };
 

@@ -1,10 +1,9 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { GameController, Heart, House, List, SignIn } from "phosphor-react";
 import type IconType from "@/@types/IconType";
-import { AuthContext } from "@/contexts/AuthContext";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -32,7 +31,6 @@ const navItems: NavItem[] = [
 
 const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
   const router = useRouter();
-  const { user, signOut } = useContext(AuthContext);
 
   useEffect(() => {
     setOpen(false);
@@ -79,15 +77,15 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
           </ul>
           <ul className="flex flex-col gap-4 ">
             <li className="py-2">
-              {
-                <button
-                  onClick={() => (!!user ? router.push("/auth") : signOut())}
-                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-                >
-                  <SignIn weight="fill" />
-                  {!!user ? "Sair" : "Login"}
-                </button>
-              }
+              <Link
+                className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                href="/auth"
+              >
+                <SignIn
+                  weight={router.pathname === "/auth" ? "fill" : undefined}
+                />
+                Login
+              </Link>
             </li>
           </ul>
         </nav>

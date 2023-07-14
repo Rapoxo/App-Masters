@@ -5,6 +5,8 @@ import PlatformIcon from "./PlatformIcon";
 import GenreIcon from "./GenreIcon";
 import Rating from "./Rating";
 import Favorite from "./Favorite";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { firestore } from "@/services/firebaseClient";
 
 type CardProps = {
   game: Game;
@@ -47,12 +49,16 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
     };
   }, [liRef]);
 
-  const ratingHandler = (id: number, rating: number) => {
-    console.log(`${id} is now ${rating} stars`);
-  };
-
-  const favoriteHandler = (id: number, favorite?: boolean) => {
-    console.log(`favorite ${favorite} ${id}`);
+  const ratingHandler = async (id: number, rating: number) => {
+    if (!user) return;
+    const userRef = doc(firestore, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+    updateDoc(userRef, {
+      ratings: {
+        ...userDoc.data()?.ratings,
+        [id]: rating,
+      },
+    });
   };
 
   return (
@@ -103,11 +109,7 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
               authenticated={!!user}
               value={rating}
             />
-            <Favorite
-              onClick={() => favoriteHandler(id, isOnFavorites)}
-              authenticated={!!user}
-              value={isOnFavorites}
-            />
+            <Favorite value={isOnFavorites} id={id} />
           </div>
         </div>
       </div>
