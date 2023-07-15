@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 const Carousel = ({ games }: { games: Game[] }) => {
   const [isMobile, setMobile] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (window.innerWidth < 640) setMobile(true);
@@ -37,11 +38,21 @@ const Carousel = ({ games }: { games: Game[] }) => {
           return (
             <SwiperSlide key={i}>
               <a target="_blank" href={game.game_url}>
-                <img
-                  className="hover:brightness-90  w-full max-h-[40vh] rounded-lg"
-                  src={game.thumbnail}
-                  alt={game.title}
-                />
+                <div className="flex flex-col h-[250px] w-full">
+                  {loading && (
+                    <div className="w-full h-full flex justify-center items-center bg-indigo-800 animate-pulse rounded-lg">
+                      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+                    </div>
+                  )}
+                  <img
+                    className={`hover:brightness-90  w-full max-h-[40vh] rounded-lg ${
+                      loading ? "hidden" : "block"
+                    }`}
+                    src={game.thumbnail}
+                    alt={game.title}
+                    onLoad={() => setLoading(false)}
+                  />
+                </div>
               </a>
             </SwiperSlide>
           );

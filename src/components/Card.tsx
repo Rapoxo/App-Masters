@@ -32,6 +32,7 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
   const { user } = useContext(AuthContext);
   const [hover, setHover] = useState(false);
   const [open, setOpen] = useState(false);
+  const [loading, setLoadinig] = useState(true);
 
   const liRef = useRef<HTMLLIElement>(null);
 
@@ -71,13 +72,21 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
       className="flex flex-col justify-between   rounded-t-lg rounded-b-lg h-full "
     >
       <div className="flex flex-col relative h-full">
-        <img
-          className={`w-full rounded-t-lg relative
-          transition duration-100 ease-in 
+        <div className="relative h-[250px]">
+          {loading && (
+            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-indigo-800 animate-pulse rounded-t-lg">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+            </div>
+          )}
+          <img
+            className={`w-full rounded-t-lg h-full object-cover
+          transition duration-100 ease-in ${loading ? "hidden" : "block"}
           `}
-          src={thumbnail}
-          alt={title}
-        />
+            onLoad={() => setLoadinig(false)}
+            src={thumbnail}
+            alt={title}
+          />
+        </div>
 
         <div className="backdrop backdrop-blur-md absolute bottom-0 z-10 bg-blue-950/80 w-full flex flex-col min-h-1/2 px-4 py-2 ">
           <div className="flex justify-between items-center">
