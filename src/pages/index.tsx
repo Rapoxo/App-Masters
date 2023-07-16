@@ -216,29 +216,87 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setOrder((prev) => {
-                        const newOrder = prev === "asc" ? "desc" : "asc";
+                  <div className="flex justify-between">
+                    <div>
+                      <button
+                        className="
+                        flex
+                        gap-2
+                        items-center
+                      bg-indigo-700
+                      hover:bg-indigo-600
+                      px-4
+                      py-3
+                      rounded-lg
+                      text-sm
+                      text-white
+                      font-bold
+                      transition-all
+                      duration-200
+                      ease-in-out
+                      disabled:bg-gray-600
+                      disabled:hover:bg-gray-500
+                      "
+                        onClick={() => {
+                          updateFilterParams({
+                            ...filterParams,
+                            sortByRating: !filterParams.sortByRating,
+                          });
+                        }}
+                      >
+                        <input
+                          name="rating"
+                          className="accent-indigo-900"
+                          checked={filterParams.sortByRating}
+                          type="checkbox"
+                          onChange={() => {
+                            updateFilterParams({
+                              ...filterParams,
+                              sortByRating: !filterParams.sortByRating,
+                            });
+                          }}
+                        />
+                        Avaliação
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setOrder((prev) => {
+                          const newOrder = prev === "asc" ? "desc" : "asc";
+                          updateFilterParams({
+                            ...filterParams,
+                            order: newOrder,
+                          });
+                          return newOrder;
+                        });
+                      }}
+                      disabled={!isLogged || loadingAuth}
+                      title={
+                        !isLogged || loadingAuth
+                          ? "Faça login para ordenar por avaliação"
+                          : ""
+                      }
+                      className="flex gap-1 justify-between font-bold items-center min-w-[140px] px-4 py-3 bg-gradient-to-t bg-indigo-700 hover:bg-indigo-600 disabled:bg-gray-600 disabled:hover:bg-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 ease-in-out"
+                    >
+                      {order === "asc" ? "Crescente" : "Decrescente"}
+                      {order === "asc" ? <SortAscending /> : <SortDescending />}
+                    </button>
+                  </div>
+                </div>
+                {/* 
+                                    <input
+                      checked={filterParams.sortByRating}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => {
                         updateFilterParams({
                           ...filterParams,
-                          order: newOrder,
+                          sortByRating: !filterParams.sortByRating,
                         });
-                        return newOrder;
-                      });
-                    }}
-                    disabled={!isLogged || loadingAuth}
-                    title={
-                      !isLogged || loadingAuth
-                        ? "Faça login para ordenar por avaliação"
-                        : ""
-                    }
-                    className="flex gap-1 justify-center font-bold items-center px-4 py-3 bg-gradient-to-t bg-indigo-700 hover:bg-indigo-600 disabled:bg-gray-600 disabled:hover:bg-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 ease-in-out"
-                  >
-                    {order === "asc" ? <SortAscending /> : <SortDescending />}
-                    Avaliação
-                  </button>
-                </div>
+                      }}
+                      className="ml-2"
+                      type="checkbox"
+                    />
+                */}
                 <GameList games={games} filterParams={filterParams} />
               </>
             )}

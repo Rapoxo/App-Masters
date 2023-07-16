@@ -42,7 +42,7 @@ const Filter = ({ multiple, options, label, name, onChange }: FilterProps) => {
         <div>
           <button
             type="button"
-            className="inline-flex relative justify-center w-full rounded-md  shadow-sm px-4 py-2 bg-indigo-700 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-1 focus:ring-offset-1  items-center"
+            className="inline-flex relative justify-center min-w-[120px] w-full rounded-md  shadow-sm px-4 py-2 bg-indigo-700 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-1 focus:ring-offset-1  items-center"
             id="options-menu"
             aria-haspopup="true"
             aria-expanded="true"
