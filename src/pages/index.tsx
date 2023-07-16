@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
-import { MagnifyingGlass, X } from "phosphor-react";
+import { CloudLightning, MagnifyingGlass, X } from "phosphor-react";
 
 import Filter from "@/components/Filter";
 import GameList from "@/components/GameList";
@@ -25,6 +25,9 @@ const Home = () => {
     query: "",
     genre: null,
     platform: null,
+    onlyFavorites: false,
+    sortBy: "rating",
+    order: "asc",
   });
 
   const [value, setValue] = useState<string>("");
@@ -98,6 +101,10 @@ const Home = () => {
       clearTimeout(timer);
     };
   }, [value]);
+
+  useEffect(() => {
+    console.log(filterParams);
+  }, [filterParams]);
 
   return (
     <div className={`${ptSans.className}`}>

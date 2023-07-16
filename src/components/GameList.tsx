@@ -18,30 +18,32 @@ const GameList = ({ games, length, filterParams }: GameListProps) => {
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
 
-  useEffect(() => {
-    const getRatings = async () => {
-      if (!user) return;
-      const docRef = doc(firestore, "users", user.uid);
-      const userDoc = await getDoc(docRef);
-      if (!userDoc.exists()) return;
-      const ratings = userDoc.data()?.ratings;
-      setRatings(ratings);
-    };
-    getRatings();
-  })
+  const getRatings = async () => {
+    if (!user) return;
+    const docRef = doc(firestore, "users", user.uid);
+    const userDoc = await getDoc(docRef);
+    if (!userDoc.exists()) return;
+    const ratings = userDoc.data()?.ratings;
+    setRatings(ratings);
+  };
+
+  const getFavorites = async () => {
+    if (!user) return;
+    const docRef = doc(firestore, "users", user.uid);
+    const userDoc = await getDoc(docRef);
+    if (!userDoc.exists()) return;
+    const favorites = userDoc.data()?.favorites;
+    setFavorites(favorites);
+    setFavoriteList(Object.keys(favorites).map((id) => +id));
+  };
 
   useEffect(() => {
-    const getFavorites = async () => {
-      if (!user) return;
-      const docRef = doc(firestore, "users", user.uid);
-      const userDoc = await getDoc(docRef);
-      if (!userDoc.exists()) return;
-      const favorites = userDoc.data()?.favorites;
-      setFavorites(favorites);
-      setFavoriteList(Object.keys(favorites).map((id) => +id));
-    };
+    getRatings();
+  }, []);
+
+  useEffect(() => {
     getFavorites();
-  });
+  }, []);
 
   useEffect(() => {
     setFavoriteList(Object.keys(favorites).map((id) => Number(id)));
@@ -71,8 +73,23 @@ const GameList = ({ games, length, filterParams }: GameListProps) => {
 
         return query && genre && platform;
       })
+      .sort((a, b) => {
+        if (filterParams.sortBy === "rating") {
+          return filterParams.order === "asc"
+            ? (ratings[b.id] || 0) - (ratings[a.id] || 0) ||
+                a.title.localeCompare(b.title)
+            : (ratings[b.id] || 0) - (ratings[a.id] || 0) ||
+                b.title.localeCompare(a.title);
+        } else if (filterParams.sortBy === "title") {
+          return filterParams.order === "asc"
+            ? a.title.localeCompare(b.title)
+            : b.title.localeCompare(a.title);
+        } else {
+          return 1;
+        }
+      })
       .slice(0, length);
-  }, [games, length, filterParams]);
+  }, [games, length, filterParams, ratings]);
 
   return gameList.length > 0 ? (
     <ul className="grid grid-cols-1 gap-8 w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 xl:px-0 ">
@@ -83,6 +100,7 @@ const GameList = ({ games, length, filterParams }: GameListProps) => {
             isOnFavorites={favoriteList.includes(game.id)}
             rating={ratings[game.id]}
             game={game}
+            updateFuncs={{ getFavorites, getRatings }}
           ></Card>
         );
       })}

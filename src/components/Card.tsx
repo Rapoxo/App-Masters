@@ -12,9 +12,13 @@ type CardProps = {
   game: Game;
   isOnFavorites?: boolean;
   rating?: number; // 1 a 4
+  updateFuncs: {
+    getFavorites: () => void;
+    getRatings: () => void;
+  };
 };
 
-const Card = ({ game, isOnFavorites, rating }: CardProps) => {
+const Card = ({ game, isOnFavorites, rating, updateFuncs }: CardProps) => {
   const {
     id,
     title,
@@ -54,7 +58,7 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
     if (!user) return;
     const userRef = doc(firestore, "users", user.uid);
     const userDoc = await getDoc(userRef);
-    updateDoc(userRef, {
+    await updateDoc(userRef, {
       ratings: {
         ...userDoc.data()?.ratings,
         [id]: rating,
@@ -117,8 +121,13 @@ const Card = ({ game, isOnFavorites, rating }: CardProps) => {
               onChange={(value) => ratingHandler(id, value)}
               authenticated={!!user}
               value={rating}
+              updateRatings={updateFuncs.getRatings}
             />
-            <Favorite value={isOnFavorites} id={id} />
+            <Favorite
+              updateFavorites={updateFuncs.getFavorites}
+              value={isOnFavorites}
+              id={id}
+            />
           </div>
         </div>
       </div>

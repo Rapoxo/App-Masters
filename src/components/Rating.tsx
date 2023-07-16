@@ -5,11 +5,17 @@ import { Star } from "phosphor-react";
 
 type RatingProps = {
   value?: number;
-  onChange: (value: number) => void;
+  onChange: (value: number) => Promise<void>;
   authenticated: boolean;
+  updateRatings: (value: number) => void;
 };
 
-const Rating = ({ value, onChange, authenticated }: RatingProps) => {
+const Rating = ({
+  value,
+  onChange,
+  authenticated,
+  updateRatings,
+}: RatingProps) => {
   const router = useRouter();
   const [hovering, setHovering] = useState<number>(-1);
   value = value || -1;
@@ -18,17 +24,22 @@ const Rating = ({ value, onChange, authenticated }: RatingProps) => {
     <div className="flex">
       {new Array(4).fill(null).map((el, i) => {
         const currentStar = i + 1;
+
+        const handleClick = async () => {
+          if (!authenticated) return router.push("auth");
+          if (value && value !== currentStar) {
+            await onChange(currentStar);
+            updateRatings(currentStar);
+          }
+        };
+
         return (
           <Star
             className="cursor-pointer"
             key={i}
             onMouseEnter={() => setHovering(currentStar)}
             onMouseLeave={() => setHovering(-1)}
-            onClick={() =>
-              !authenticated
-                ? router.push("auth")
-                : value && value !== currentStar && onChange(currentStar)
-            }
+            onClick={handleClick}
             weight={
               (value && value >= currentStar) || hovering >= currentStar
                 ? "fill"

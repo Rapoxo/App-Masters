@@ -9,9 +9,10 @@ import { AuthContext } from "@/contexts/AuthContext";
 type FavoriteProps = {
   value?: boolean;
   id: number;
+  updateFavorites?: () => void;
 };
 
-const Favorite = ({ value, id }: FavoriteProps) => {
+const Favorite = ({ value, id, updateFavorites }: FavoriteProps) => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
 
@@ -33,7 +34,6 @@ const Favorite = ({ value, id }: FavoriteProps) => {
         ...userDoc.data()?.favorites,
         [id]: !isOnFavorites,
       };
-
       updateDoc(docRef, {
         favorites: newFavorites,
       });
