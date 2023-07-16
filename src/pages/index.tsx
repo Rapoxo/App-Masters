@@ -97,10 +97,6 @@ const Home = () => {
     setFilterParams({ ...filterParams, onlyFavorites });
   }, [onlyFavorites]);
 
-  useEffect(() => {
-    console.log(filterParams);
-  }, [filterParams]);
-
   return (
     <div>
       <Head>

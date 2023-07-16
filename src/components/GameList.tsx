@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AuthContext } from "@/contexts/AuthContext";
 import { firestore } from "@/services/firebaseClient";
 import Card from "@/components/Card";
+import { FavoriteContext } from "@/contexts/FavoriteContext";
 
 type GameListProps = {
   games: Game[];
@@ -14,6 +15,7 @@ type GameListProps = {
 
 const GameList = ({ games, filterParams }: GameListProps) => {
   const { user } = useContext(AuthContext);
+  const { onlyFavorites } = useContext(FavoriteContext);
 
   const [favoriteList, setFavoriteList] = useState<number[]>([]);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
@@ -46,6 +48,10 @@ const GameList = ({ games, filterParams }: GameListProps) => {
   useEffect(() => {
     getFavorites();
   }, []);
+
+  useEffect(() => {
+    if (onlyFavorites) getFavorites();
+  }, [onlyFavorites]);
 
   const updateListLength = () => {
     setLength((prev) => prev + 6);
