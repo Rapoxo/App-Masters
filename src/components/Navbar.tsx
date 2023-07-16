@@ -2,9 +2,17 @@ import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { GameController, Heart, House, List, SignIn } from "phosphor-react";
+import {
+  GameController,
+  Heart,
+  House,
+  List,
+  SignIn,
+  SignOut,
+} from "phosphor-react";
 import type IconType from "@/@types/IconType";
 import { FavoriteContext } from "@/contexts/FavoriteContext";
+import { AuthContext } from "@/contexts/AuthContext";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -17,17 +25,15 @@ type NavItem = {
   path: string;
 };
 
-const navItems: NavItem[] = [
-  {
-    name: "Início",
-    icon: House,
-    path: "/",
-  },
-];
-
 const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
   const { onlyFavorites, setOnlyFavorites } = useContext(FavoriteContext);
+  const { user, signOut } = useContext(AuthContext);
+  const [isLogged, setIsLogged] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsLogged(!!user);
+  }, [user]);
 
   useEffect(() => {
     setOpen(false);
@@ -58,19 +64,18 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
       >
         <nav className="flex flex-col w-full h-full justify-between p-5">
           <ul className="flex flex-col gap-4 ">
-            {navItems.map((item, i) => (
-              <li key={i} className="py-2">
-                <Link
-                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-                  href={item.path}
-                >
-                  <item.icon
-                    weight={router.pathname === item.path ? "fill" : undefined}
-                  />
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+            <li className="py-2">
+              <span
+                onClick={() => {
+                  setOpen(false);
+                  setOnlyFavorites(false);
+                }}
+                className="flex items-center gap-3 text-2xl font-bold text-indigo-20 cursor-pointer"
+              >
+                <House weight={!onlyFavorites ? "fill" : undefined} />
+                Início
+              </span>
+            </li>
 
             <li className="py-2">
               <button
@@ -87,15 +92,25 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
           </ul>
           <ul className="flex flex-col gap-4 ">
             <li className="py-2">
-              <Link
-                className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-                href="/auth"
-              >
-                <SignIn
-                  weight={router.pathname === "/auth" ? "fill" : undefined}
-                />
-                Login
-              </Link>
+              {!isLogged ? (
+                <Link
+                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                  href="/auth"
+                >
+                  <SignIn /> Entrar
+                </Link>
+              ) : (
+                <span
+                  onClick={() => {
+                    signOut();
+                    setOpen(false);
+                    router.reload();
+                  }}
+                  className="flex items-center gap-3 text-2xl font-bold cursor-pointer"
+                >
+                  <SignOut /> Sair
+                </span>
+              )}
             </li>
           </ul>
         </nav>
@@ -106,8 +121,16 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
 
 const Navbar = ({ children }: { children: React.ReactNode }) => {
   const { onlyFavorites, setOnlyFavorites } = useContext(FavoriteContext);
+  const { user, signOut } = useContext(AuthContext);
+
+  const [isLogged, setIsLogged] = useState(false);
   const [open, setOpen] = useState(false);
-  
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsLogged(!!user);
+  }, [user]);
+
   return (
     <>
       <header>
@@ -119,10 +142,18 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
           >
             <List size={32} />
           </span>
-          <h1 className="flex items-center text-3xl">
+
+          <h1
+            onClick={() => {
+              setOpen(false);
+              setOnlyFavorites(false);
+            }}
+            className="flex items-center text-3xl cursor-pointer"
+          >
             <GameController className="mr-2" size={32} />
             App Masters
           </h1>
+
           <ul className="flex justify-between gap-5 items-center">
             <li className="hidden md:block">
               <button
@@ -134,6 +165,28 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
                 <Heart weight={onlyFavorites ? "fill" : undefined} />
                 Favoritos
               </button>
+            </li>
+
+            <li className="py-2">
+              {!isLogged ? (
+                <Link
+                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                  href="/auth"
+                >
+                  <SignIn /> Entrar
+                </Link>
+              ) : (
+                <span
+                  onClick={() => {
+                    signOut();
+                    setOpen(false);
+                    router.reload();
+                  }}
+                  className="flex items-center gap-3 text-2xl font-bold cursor-pointer"
+                >
+                  <SignOut /> Sair
+                </span>
+              )}
             </li>
 
             <li>

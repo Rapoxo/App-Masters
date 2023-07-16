@@ -19,11 +19,15 @@ import GameList from "@/components/GameList";
 import Highlights from "@/components/Highlights";
 
 import Head from "next/head";
+import { useRouter } from "next/router";
+
 import Loader from "@/components/Loader";
 import { AuthContext } from "@/contexts/AuthContext";
 import { FavoriteContext } from "@/contexts/FavoriteContext";
 
 const Home = () => {
+  const router = useRouter();
+
   const { user, loading: loadingAuth } = useContext(AuthContext);
   const { onlyFavorites, setOnlyFavorites } = useContext(FavoriteContext);
   const [isLogged, setIsLogged] = useState(false);
@@ -38,7 +42,7 @@ const Home = () => {
     genre: null,
     platform: null,
     onlyFavorites: onlyFavorites,
-    sortByRating: true,
+    sortByRating: false,
     order: order,
   });
 
@@ -219,6 +223,7 @@ const Home = () => {
                   <div className="flex justify-between">
                     <div>
                       <button
+                        disabled={!isLogged || loadingAuth}
                         className="
                         flex
                         gap-2
@@ -238,6 +243,9 @@ const Home = () => {
                       disabled:hover:bg-gray-500
                       "
                         onClick={() => {
+                          if (!isLogged || loadingAuth) {
+                            router.push("/auth");
+                          }
                           updateFilterParams({
                             ...filterParams,
                             sortByRating: !filterParams.sortByRating,
@@ -261,6 +269,9 @@ const Home = () => {
                     </div>
                     <button
                       onClick={() => {
+                        if (!isLogged || loadingAuth) {
+                          router.push("/auth");
+                        }
                         setOrder((prev) => {
                           const newOrder = prev === "asc" ? "desc" : "asc";
                           updateFilterParams({
