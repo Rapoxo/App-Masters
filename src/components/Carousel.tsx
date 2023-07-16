@@ -38,7 +38,7 @@ const Carousel = ({ games }: { games: Game[] }) => {
           return (
             <SwiperSlide key={i}>
               <a target="_blank" href={game.game_url}>
-                <div className="flex flex-col h-[250px] w-full">
+                <div className="flex flex-col  w-full">
                   {loading && (
                     <div className="w-full h-full flex justify-center items-center bg-indigo-800 animate-pulse rounded-lg">
                       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>

@@ -1,37 +1,48 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-import { CloudLightning, MagnifyingGlass, X } from "phosphor-react";
+import {
+  MagnifyingGlass,
+  SortAscending,
+  SortDescending,
+  X,
+} from "phosphor-react";
 
 import Filter from "@/components/Filter";
 import GameList from "@/components/GameList";
 import Highlights from "@/components/Highlights";
 
 import Head from "next/head";
-import { PT_Sans } from "next/font/google";
-import Link from "next/link";
 import Loader from "@/components/Loader";
-
-const ptSans = PT_Sans({
-  weight: ["400", "700"],
-  subsets: ["latin-ext"],
-});
+import { AuthContext } from "@/contexts/AuthContext";
+import { FavoriteContext } from "@/contexts/FavoriteContext";
 
 const Home = () => {
+  const { user, loading: loadingAuth } = useContext(AuthContext);
+  const { onlyFavorites, setOnlyFavorites } = useContext(FavoriteContext);
+  const [isLogged, setIsLogged] = useState(false);
+
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
 
   const [filterParams, setFilterParams] = useState<FilterParams>({
     query: "",
     genre: null,
     platform: null,
-    onlyFavorites: false,
-    sortBy: "rating",
-    order: "asc",
+    onlyFavorites: onlyFavorites,
+    sortByRating: true,
+    order: order,
   });
 
   const [value, setValue] = useState<string>("");
-  const [listLength, setListLength] = useState(12);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = () => {
@@ -62,34 +73,14 @@ const Home = () => {
   };
   const changeHandler = useCallback(updateFilterParams, []);
 
-  const updateListLength = () => {
-    setListLength((prev) => prev + 6);
-  };
-
-  const handleScroll = () => {
-    const scrollTop = window.scrollY;
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-    const offset = 100;
-    const endOfPage = scrollTop + windowHeight + offset >= documentHeight;
-
-    if (
-      windowHeight + document.documentElement.scrollTop ===
-        document.documentElement.offsetHeight ||
-      endOfPage
-    ) {
-      return updateListLength();
-    }
-
-    return;
-  };
-
   useEffect(() => {
     if (!loading) fetchData();
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (loadingAuth) return;
+    if (user) setIsLogged(true);
+  }, [user]);
 
   // Debouncer para pesquisa de titulos
   useEffect(() => {
@@ -103,11 +94,15 @@ const Home = () => {
   }, [value]);
 
   useEffect(() => {
+    setFilterParams({ ...filterParams, onlyFavorites });
+  }, [onlyFavorites]);
+
+  useEffect(() => {
     console.log(filterParams);
   }, [filterParams]);
 
   return (
-    <div className={`${ptSans.className}`}>
+    <div>
       <Head>
         <title>App Masters</title>
       </Head>
@@ -118,7 +113,7 @@ const Home = () => {
             {loading && !error && games.length < 1 ? (
               <Loader />
             ) : error ? (
-              <div className="flex flex-col gap-3 justify-center items-center h-full ">
+              <div className="flex flex-col gap-3 justify-center h-full">
                 <h1>{error}</h1>
                 <button
                   onClick={() => fetchData()}
@@ -132,22 +127,31 @@ const Home = () => {
                 <Highlights length={6} games={games} />
 
                 <h2 className="text-2xl my-4">
-                  Encontre seus jogos{" "}
-                  <Link
-                    className="text-indigo-400 hover:underline"
-                    href="/favorites"
-                  >
-                    favoritos
-                  </Link>{" "}
-                  aqui:
+                  {onlyFavorites ? (
+                    <>Esses são seus jogos favoritos:</>
+                  ) : (
+                    <>
+                      Encontre seus jogos{" "}
+                      <button
+                        className="text-indigo-400 hover:underline"
+                        onClick={() => {
+                          setOnlyFavorites((prev) => !prev);
+                        }}
+                      >
+                        favoritos
+                      </button>{" "}
+                      aqui:{" "}
+                    </>
+                  )}
                 </h2>
 
                 {/* Search & Filters */}
-                <div className="flex flex-col gap-2 justify-between pb-4 sm:flex-row ">
-                  <div className="flex w-full sm:w-auto  ">
-                    <form className=" w-full" onSubmit={handleSubmit}>
-                      <div
-                        className="
+                <div className="mb-4">
+                  <div className="flex flex-col gap-2 justify-between pb-4 sm:flex-row">
+                    <div className="flex w-full sm:w-auto  ">
+                      <form className=" w-full" onSubmit={handleSubmit}>
+                        <div
+                          className="
                           flex
                           justify-center
                           w-full
@@ -158,68 +162,88 @@ const Home = () => {
                           px-3
                           relative
                         "
-                      >
-                        <MagnifyingGlass />
-                        <input
-                          ref={inputRef}
-                          className="w-full bg-slate-900 p-2  rounded-lg 
+                        >
+                          <MagnifyingGlass />
+                          <input
+                            ref={inputRef}
+                            className="w-full bg-slate-900 p-2  rounded-lg 
                             focus:ring-0
                             focus:outline-none"
-                          type="text"
-                          placeholder="Pesquisar"
-                          onChange={(e) => setValue(e.target.value)}
+                            type="text"
+                            placeholder="Pesquisar"
+                            onChange={(e) => setValue(e.target.value)}
+                          />
+                          {inputRef.current?.value && (
+                            <X
+                              className="cursor-pointer absolute right-0 mr-2"
+                              onClick={() => {
+                                inputRef.current!.value = "";
+                                setFilterParams({
+                                  ...filterParams,
+                                  query: "",
+                                });
+                              }}
+                            ></X>
+                          )}
+                        </div>
+                      </form>
+                    </div>
+                    <div className="flex justify-between gap-4 items-center">
+                      <span className="sm:hidden">Filtrar por: </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Filter
+                          {...{
+                            options: Array.from(
+                              new Set(games.map((game) => game.genre))
+                            ),
+                            multiple: false,
+                            onChange: changeHandler,
+                            name: "genre",
+                            label: "Gênero",
+                          }}
                         />
-                        {inputRef.current?.value && (
-                          <X
-                            className="cursor-pointer absolute right-0 mr-2"
-                            onClick={() => {
-                              inputRef.current!.value = "";
-                              setFilterParams({
-                                ...filterParams,
-                                query: "",
-                              });
-                            }}
-                          ></X>
-                        )}
+                        <Filter
+                          {...{
+                            options: Array.from(
+                              new Set(
+                                games.flatMap((game) =>
+                                  game.platform.split(", ")
+                                )
+                              )
+                            ),
+                            multiple: false,
+                            onChange: changeHandler,
+                            name: "platform",
+                            label: "Plataforma",
+                          }}
+                        />
                       </div>
-                    </form>
-                  </div>
-                  <div className="flex justify-between gap-4 items-center   ">
-                    <span className="sm:hidden">Filtrar por: </span>
-                    <div className="grid grid-cols-2">
-                      <Filter
-                        {...{
-                          options: Array.from(
-                            new Set(games.map((game) => game.genre))
-                          ),
-                          multiple: false,
-                          onChange: changeHandler,
-                          name: "genre",
-                          label: "Gênero",
-                        }}
-                      />
-                      <Filter
-                        {...{
-                          options: Array.from(
-                            new Set(
-                              games.flatMap((game) => game.platform.split(", "))
-                            )
-                          ),
-                          multiple: false,
-                          onChange: changeHandler,
-                          name: "platform",
-                          label: "Plataforma",
-                        }}
-                      />
                     </div>
                   </div>
+                  <button
+                    onClick={() => {
+                      setOrder((prev) => {
+                        const newOrder = prev === "asc" ? "desc" : "asc";
+                        updateFilterParams({
+                          ...filterParams,
+                          order: newOrder,
+                        });
+                        return newOrder;
+                      });
+                    }}
+                    disabled={!isLogged || loadingAuth}
+                    title={
+                      !isLogged || loadingAuth
+                        ? "Faça login para ordenar por avaliação"
+                        : ""
+                    }
+                    className="flex gap-1 justify-center font-bold items-center px-4 py-3 bg-gradient-to-t bg-indigo-700 hover:bg-indigo-600 disabled:bg-gray-600 disabled:hover:bg-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 ease-in-out"
+                  >
+                    {order === "asc" ? <SortAscending /> : <SortDescending />}
+                    Avaliação
+                  </button>
                 </div>
-                {/* GameList */}
-                <GameList
-                  games={games}
-                  length={listLength}
-                  filterParams={filterParams}
-                />
+                <GameList games={games} filterParams={filterParams} />
               </>
             )}
           </div>

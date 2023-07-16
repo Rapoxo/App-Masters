@@ -45,7 +45,7 @@ const Favorite = ({ value, id, updateFavorites }: FavoriteProps) => {
 
   return (
     <Heart
-      className="cursor-pointer"
+      className="cursor-pointer transition-all duration-300 hover:scale-105 hover:animate-pulse ease-in"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       onClick={handleClick}

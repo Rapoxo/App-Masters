@@ -1,22 +1,24 @@
 import React, { useMemo, useContext, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import Card from "./Card";
+
+import { AnimatePresence, motion } from "framer-motion";
 
 import { AuthContext } from "@/contexts/AuthContext";
 import { firestore } from "@/services/firebaseClient";
+import Card from "@/components/Card";
 
 type GameListProps = {
   games: Game[];
-  length: number;
   filterParams: FilterParams;
 };
 
-const GameList = ({ games, length, filterParams }: GameListProps) => {
+const GameList = ({ games, filterParams }: GameListProps) => {
   const { user } = useContext(AuthContext);
 
   const [favoriteList, setFavoriteList] = useState<number[]>([]);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
+  const [length, setLength] = useState(12);
 
   const getRatings = async () => {
     if (!user) return;
@@ -43,6 +45,33 @@ const GameList = ({ games, length, filterParams }: GameListProps) => {
 
   useEffect(() => {
     getFavorites();
+  }, []);
+
+  const updateListLength = () => {
+    setLength((prev) => prev + 6);
+  };
+
+  const handleScroll = () => {
+    const scrollTop = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const offset = 100;
+    const endOfPage = scrollTop + windowHeight + offset >= documentHeight;
+
+    if (
+      windowHeight + document.documentElement.scrollTop ===
+        document.documentElement.offsetHeight ||
+      endOfPage
+    ) {
+      return updateListLength();
+    }
+
+    return;
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -74,37 +103,47 @@ const GameList = ({ games, length, filterParams }: GameListProps) => {
         return query && genre && platform;
       })
       .sort((a, b) => {
-        if (filterParams.sortBy === "rating") {
+        const ratingA = ratings[a.id] || -1;
+        const ratingB = ratings[b.id] || -1;
+
+        if (filterParams.sortByRating) {
+          if (ratingA === -1) return 1;
+          if (ratingB === -1) return -1;
+          if (ratingA === ratingB) {
+            return a.title > b.title ? 1 : -1;
+          }
           return filterParams.order === "asc"
-            ? (ratings[b.id] || 0) - (ratings[a.id] || 0) ||
-                a.title.localeCompare(b.title)
-            : (ratings[b.id] || 0) - (ratings[a.id] || 0) ||
-                b.title.localeCompare(a.title);
-        } else if (filterParams.sortBy === "title") {
-          return filterParams.order === "asc"
-            ? a.title.localeCompare(b.title)
-            : b.title.localeCompare(a.title);
-        } else {
-          return 1;
+            ? ratingA - ratingB
+            : ratingB - ratingA;
         }
+
+        return 1;
+      })
+      .filter((game) => {
+        if (filterParams.onlyFavorites) {
+          return favoriteList.includes(game.id);
+        }
+        return true;
       })
       .slice(0, length);
   }, [games, length, filterParams, ratings]);
 
   return gameList.length > 0 ? (
-    <ul className="grid grid-cols-1 gap-8 w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 xl:px-0 ">
-      {gameList.slice(0, length).map((game, index) => {
-        return (
-          <Card
-            key={index}
-            isOnFavorites={favoriteList.includes(game.id)}
-            rating={ratings[game.id]}
-            game={game}
-            updateFuncs={{ getFavorites, getRatings }}
-          ></Card>
-        );
-      })}
-    </ul>
+    <AnimatePresence>
+      <motion.ul className="grid grid-cols-1 gap-8 w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 xl:px-0 ">
+        {gameList.slice(0, length).map((game, index) => {
+          return (
+            <Card
+              key={index}
+              isOnFavorites={favoriteList.includes(game.id)}
+              rating={ratings[game.id]}
+              game={game}
+              updateFuncs={{ getFavorites, getRatings }}
+            ></Card>
+          );
+        })}
+      </motion.ul>
+    </AnimatePresence>
   ) : (
     games.length > 0 && gameList.length === 0 && (
       <div className="flex w-full justify-center items-center ">

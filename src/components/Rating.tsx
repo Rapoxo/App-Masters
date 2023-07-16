@@ -35,7 +35,7 @@ const Rating = ({
 
         return (
           <Star
-            className="cursor-pointer"
+            className="cursor-pointer transition-all duration-300 hover:scale-110 ease-in"
             key={i}
             onMouseEnter={() => setHovering(currentStar)}
             onMouseLeave={() => setHovering(-1)}

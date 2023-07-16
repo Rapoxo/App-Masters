@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { GameController, Heart, House, List, SignIn } from "phosphor-react";
 import type IconType from "@/@types/IconType";
+import { FavoriteContext } from "@/contexts/FavoriteContext";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -22,14 +23,10 @@ const navItems: NavItem[] = [
     icon: House,
     path: "/",
   },
-  {
-    name: "Favoritos",
-    icon: Heart,
-    path: "/favorites",
-  },
 ];
 
 const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
+  const { onlyFavorites, setOnlyFavorites } = useContext(FavoriteContext);
   const router = useRouter();
 
   useEffect(() => {
@@ -74,6 +71,19 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
                 </Link>
               </li>
             ))}
+
+            <li className="py-2">
+              <button
+                onClick={() => {
+                  setOnlyFavorites((prev) => !prev);
+                  setOpen(false);
+                }}
+                className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+              >
+                <Heart weight={onlyFavorites ? "fill" : undefined} />
+                Favoritos
+              </button>
+            </li>
           </ul>
           <ul className="flex flex-col gap-4 ">
             <li className="py-2">
@@ -95,9 +105,9 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
 };
 
 const Navbar = ({ children }: { children: React.ReactNode }) => {
-  const [open, setOpen] = React.useState(false);
-  const router = useRouter();
-
+  const { onlyFavorites, setOnlyFavorites } = useContext(FavoriteContext);
+  const [open, setOpen] = useState(false);
+  
   return (
     <>
       <header>
@@ -114,23 +124,17 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
             App Masters
           </h1>
           <ul className="flex justify-between gap-5 items-center">
-            {navItems.map((item, i) => {
-              return (
-                <li key={i} className="hidden md:block">
-                  <Link
-                    className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-                    href={item.path}
-                  >
-                    <item.icon
-                      weight={
-                        router.pathname === item.path ? "fill" : undefined
-                      }
-                    />
-                    {item.name}
-                  </Link>
-                </li>
-              );
-            })}
+            <li className="hidden md:block">
+              <button
+                onClick={() => {
+                  setOnlyFavorites((prev) => !prev);
+                }}
+                className="flex items-center gap-1 text-2xl font-bold text-indigo-20"
+              >
+                <Heart weight={onlyFavorites ? "fill" : undefined} />
+                Favoritos
+              </button>
+            </li>
 
             <li>
               <a target="_blank" href="https://github.com/rapoxo">

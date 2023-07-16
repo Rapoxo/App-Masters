@@ -36,6 +36,6 @@ type FilterParams = {
   genre?: Genre | null;
   platform?: Platform | null;
   onlyFavorites?: boolean;
-  sortBy?: "rating" | "title";
+  sortByRating?: boolean;
   order?: "asc" | "desc";
 };
