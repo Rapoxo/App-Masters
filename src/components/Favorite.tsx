@@ -9,19 +9,30 @@ import { AuthContext } from "@/contexts/AuthContext";
 type FavoriteProps = {
   value?: boolean;
   id: number;
-  updateFavorites?: () => void;
 };
 
-const Favorite = ({ value, id, updateFavorites }: FavoriteProps) => {
+const Favorite = ({ value, id }: FavoriteProps) => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
 
+  const [isMobile, setMobile] = useState(false);
   const [isOnFavorites, setIsOnFavorites] = useState(value);
   const [hovering, setHovering] = useState(false);
 
   useEffect(() => {
     setIsOnFavorites(value);
   }, [value]);
+
+  useEffect(() => {
+    if (window.innerWidth < 640) setMobile(true);
+
+    function handleResize() {
+      setMobile(window.innerWidth < 640);
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleClick = async () => {
     if (!user) return router.push("/auth");
@@ -45,12 +56,14 @@ const Favorite = ({ value, id, updateFavorites }: FavoriteProps) => {
 
   return (
     <Heart
-      className="cursor-pointer transition-all duration-300 hover:scale-105 hover:animate-pulse ease-in"
+      className={`cursor-pointer transition-all duration-300 hover:scale-105 ease-in ${
+        !isOnFavorites && "sm:hover:animate-pulse"
+      }`}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       onClick={handleClick}
-      weight={isOnFavorites || hovering ? "fill" : undefined}
-      fillOpacity={hovering && !isOnFavorites ? 0.7 : undefined}
+      weight={isOnFavorites || (!isMobile && hovering) ? "fill" : undefined}
+      fillOpacity={!isMobile && hovering && !isOnFavorites ? 0.7 : undefined}
       fill={!!user ? "red" : "gray"}
       color={!!user ? "white" : "gray"}
       size={24}

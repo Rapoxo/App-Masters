@@ -42,7 +42,7 @@ const Home = () => {
     genre: null,
     platform: null,
     onlyFavorites: onlyFavorites,
-    sortByRating: false,
+    sortByRating: true,
     order: order,
   });
 
@@ -220,53 +220,7 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <div>
-                      <button
-                        disabled={!isLogged || loadingAuth}
-                        className="
-                        flex
-                        gap-2
-                        items-center
-                      bg-indigo-700
-                      hover:bg-indigo-600
-                      px-4
-                      py-3
-                      rounded-lg
-                      text-sm
-                      text-white
-                      font-bold
-                      transition-all
-                      duration-200
-                      ease-in-out
-                      disabled:bg-gray-600
-                      disabled:hover:bg-gray-500
-                      "
-                        onClick={() => {
-                          if (!isLogged || loadingAuth) {
-                            router.push("/auth");
-                          }
-                          updateFilterParams({
-                            ...filterParams,
-                            sortByRating: !filterParams.sortByRating,
-                          });
-                        }}
-                      >
-                        <input
-                          name="rating"
-                          className="accent-indigo-900"
-                          checked={filterParams.sortByRating}
-                          type="checkbox"
-                          onChange={() => {
-                            updateFilterParams({
-                              ...filterParams,
-                              sortByRating: !filterParams.sortByRating,
-                            });
-                          }}
-                        />
-                        Avaliação
-                      </button>
-                    </div>
+                  <div className="flex">
                     <button
                       onClick={() => {
                         if (!isLogged || loadingAuth) {
@@ -289,7 +243,7 @@ const Home = () => {
                       }
                       className="flex gap-1 justify-between font-bold items-center min-w-[140px] px-4 py-3 bg-gradient-to-t bg-indigo-700 hover:bg-indigo-600 disabled:bg-gray-600 disabled:hover:bg-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 ease-in-out"
                     >
-                      {order === "asc" ? "Crescente" : "Decrescente"}
+                      {order === "asc" ? "Menor" : "Maior"} avaliação
                       {order === "asc" ? <SortAscending /> : <SortDescending />}
                     </button>
                   </div>

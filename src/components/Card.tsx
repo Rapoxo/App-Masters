@@ -123,7 +123,7 @@ const Card = ({ game, isOnFavorites, rating, updateFuncs }: CardProps) => {
               value={rating}
               updateRatings={updateFuncs.getRatings}
             />
-            <Favorite updateFavorites={updateFuncs.getFavorites} value={isOnFavorites} id={id} />
+            <Favorite value={isOnFavorites} id={id} />
           </div>
         </div>
       </div>

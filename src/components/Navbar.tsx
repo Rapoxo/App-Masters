@@ -69,26 +69,35 @@ const MobileMenu = ({ isOpen, setOpen }: MobileMenuProps) => {
                 onClick={() => {
                   setOpen(false);
                   setOnlyFavorites(false);
+                  if (router.pathname !== "/") router.push("/");
                 }}
                 className="flex items-center gap-3 text-2xl font-bold text-indigo-20 cursor-pointer"
               >
-                <House weight={!onlyFavorites ? "fill" : undefined} />
+                <House
+                  weight={
+                    !onlyFavorites && router.pathname === "/"
+                      ? "fill"
+                      : undefined
+                  }
+                />
                 Início
               </span>
             </li>
 
-            <li className="py-2">
-              <button
-                onClick={() => {
-                  setOnlyFavorites((prev) => !prev);
-                  setOpen(false);
-                }}
-                className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
-              >
-                <Heart weight={onlyFavorites ? "fill" : undefined} />
-                Favoritos
-              </button>
-            </li>
+            {router.pathname === "/" && (
+              <li className="py-2">
+                <button
+                  onClick={() => {
+                    setOnlyFavorites((prev) => !prev);
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
+                >
+                  <Heart weight={onlyFavorites ? "fill" : undefined} />
+                  Favoritos
+                </button>
+              </li>
+            )}
           </ul>
           <ul className="flex flex-col gap-4 ">
             <li className="py-2">
@@ -154,20 +163,22 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
             App Masters
           </h1>
 
-          <ul className=" justify-between gap-5 items-center hidden sm:flex">
-            <li className="hidden md:block">
-              <button
-                onClick={() => {
-                  setOnlyFavorites((prev) => !prev);
-                }}
-                className="flex items-center gap-1 text-2xl font-bold text-indigo-20"
-              >
-                <Heart weight={onlyFavorites ? "fill" : undefined} />
-                Favoritos
-              </button>
-            </li>
+          <ul className="flex justify-between gap-5 items-center ">
+            {router.pathname === "/" && (
+              <li className="py-2 hidden md:block">
+                <button
+                  onClick={() => {
+                    setOnlyFavorites((prev) => !prev);
+                  }}
+                  className="flex items-center gap-1 text-2xl font-bold text-indigo-20"
+                >
+                  <Heart weight={onlyFavorites ? "fill" : undefined} />
+                  Favoritos
+                </button>
+              </li>
+            )}
 
-            <li className="py-2 ">
+            <li className="py-2 hidden md:block ">
               {!isLogged ? (
                 <Link
                   className="flex items-center gap-3 text-2xl font-bold text-indigo-20"
