@@ -154,7 +154,7 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
             App Masters
           </h1>
 
-          <ul className="flex justify-between gap-5 items-center">
+          <ul className=" justify-between gap-5 items-center hidden sm:flex">
             <li className="hidden md:block">
               <button
                 onClick={() => {
@@ -167,7 +167,7 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
               </button>
             </li>
 
-            <li className="py-2">
+            <li className="py-2 ">
               {!isLogged ? (
                 <Link
                   className="flex items-center gap-3 text-2xl font-bold text-indigo-20"

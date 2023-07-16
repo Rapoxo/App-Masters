@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PT_Sans } from "next/font/google";
 import { FavoriteProvider } from "@/contexts/FavoriteContext";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const ptSans = PT_Sans({
   weight: ["400", "700"],
@@ -17,7 +18,8 @@ export default function App({ Component, pageProps }: AppProps) {
     <AuthProvider>
       <FavoriteProvider>
         <Navbar>
-          <div className={ptSans.className}>
+          <div className={`relative ${ptSans.className}`}>
+            <ScrollToTop />
             <Component {...pageProps} />
           </div>
         </Navbar>
